@@ -4,19 +4,28 @@ Useful PHP Symfony ^4 features
 First add to your Controller class some required uses:
 
 ```php
+use App\LibBundle\Lib\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-```
 ...
+```
 
 and then here's some useful Symfony 4 Controller members functions:
 
-...
-```php
 
-/**
+```php
+...
+
+	/**
+	 *
+	 * @var EntityManager 
+	 */
+	protected $em = null;
+
+	/**
 	 * 
 	 * @return EntityManager
 	 */
@@ -28,13 +37,16 @@ and then here's some useful Symfony 4 Controller members functions:
 		return $this->em;
 	}
 
-  /*
-   * redirects to the previous location
-   */
+	/**
+	 * redirects to the previous address
+	 * 
+	 * @param Request $request
+	 * @param string $default
+	 * @return RedirectResponse
+	 */
 	protected function back(Request $request, $default = 'index')
 	{
 		$referer = $request->headers->get('referer');
-		//dump($referer); die;
 		if ($referer) {
 			return $this->redirect($referer);
 		} else {
@@ -42,18 +54,25 @@ and then here's some useful Symfony 4 Controller members functions:
 		}
 	}
 
-  /*
-   * add flash message to further show it to user
-   */
-	protected function flash($message, $bag = 'success')
+	/**
+	 * ads a flash message to further show it to the user
+	 * 
+	 * @param string $message
+	 * @param string $bag
+	 */
+	protected function flash(string $message, ?string $bag = 'success')
 	{
 		$flashbag = $this->get('session')->getFlashBag();
 		$flashbag->add($bag, $message);
 	}
 	
-  /*
-   * returns json response with additional status and errors fields
-   */
+	/**
+	 * returns JsonResponse
+	 * 
+	 * @param array $resp
+	 * @param array $errors
+	 * @return JsonResponse
+	 */
 	protected function ajaxResponse(?array $resp = null, ?array $errors = [])
 	{
 		$rsp = [
@@ -65,6 +84,6 @@ and then here's some useful Symfony 4 Controller members functions:
 		}
 		return new JsonResponse($rsp);
 	}
-
-```
+	
 ...
+```
